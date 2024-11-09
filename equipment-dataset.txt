@@ -1,0 +1,16 @@
+record_id,equipment_name,location_in_building,manufacturer,model,serial_number,equipment_type,size,age,datetime,type_of_material,condition
+EQ001,Air Handler Unit 1,Basement Room B12,Carrier,40RU-16,AHU78901234,ventilation,2000 CFM,8,2024-02-15 08:30:00,steel/aluminum,good
+EQ002,Main Circuit Breaker,Electrical Room E1,Square D,QO3100,MCB45678901,electrical,3000 Amps,12,2024-02-15 09:15:00,copper/plastic,fair
+EQ003,Support Beam B-12,Floor 3 East Wing,USSteel,W14x311,SB12345678,structure,14 inch,15,2024-02-15 10:00:00,steel,good
+EQ004,Exhaust Fan,Roof Section R2,Greenheck,GB-141-4,EF23456789,ventilation,1500 CFM,5,2024-02-15 11:30:00,steel/aluminum,excellent
+EQ005,Distribution Panel,Floor 2 Utility Room,Siemens,P1-42B,DP34567890,electrical,400 Amps,10,2024-02-15 13:45:00,copper/steel,good
+EQ006,Column C-24,Floor 1 Main Hall,Atlas Steel,HSS8x8,COL3456789,structure,8 inch,15,2024-02-15 14:20:00,steel,good
+EQ007,Supply Fan SF-3,Mechanical Room M1,Twin City,SWSI-365,SF45678901,ventilation,3000 CFM,6,2024-02-15 15:10:00,steel/aluminum,fair
+EQ008,Emergency Generator,Ground Floor G1,Caterpillar,D3516B,GEN5678901,electrical,2000 kW,7,2024-02-15 16:00:00,steel/copper,good
+EQ009,Girder G-15,Floor 4 West Wing,Nucor,W24x162,GIR6789012,structure,24 inch,15,2024-02-15 16:45:00,steel,fair
+EQ010,VAV Box 2-12,Floor 2 Room 212,Trane,VCCF-24,VAV7890123,ventilation,800 CFM,4,2024-02-16 08:00:00,galvanized steel,excellent
+EQ011,Transformer T-1,Basement Electrical Room,ABB,DTIS-75,TR89012345,electrical,75 kVA,9,2024-02-16 09:30:00,copper/steel,good
+EQ012,Joist J-32,Floor 5 South Wing,Vulcraft,LH-series,JST9012345,structure,18 inch,15,2024-02-16 10:15:00,steel,good
+EQ013,Return Fan RF-2,Penthouse,Cook,CPS-4000,RF01234567,ventilation,4000 CFM,3,2024-02-16 11:00:00,steel/aluminum,excellent
+EQ014,UPS System,Server Room SR1,APC,SURT20KRMXLT,UPS1234567,electrical,20 kVA,5,2024-02-16 13:20:00,various,good
+EQ015,Beam B-45,Floor 6 North Wing,Freedom Steel,W18x76,BM12345678,structure,18 inch,15,2024-02-16 14:45:00,steel,fair
