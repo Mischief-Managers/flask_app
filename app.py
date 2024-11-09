@@ -98,6 +98,19 @@ UPLOAD_FOLDER = 'uploads'
 #             'error': str(e)
 #         }
 
+def flatten_dictionary(data, parent_key='', separator='_'):
+    flattened = {}
+    for key, value in data.items():
+        new_key = f"{parent_key}{separator}{key}" if parent_key else key
+        if isinstance(value, dict):
+            nested_dict = flatten_dictionary(value, new_key, separator)
+            flattened.update(nested_dict)
+        else:
+            flattened[new_key] = value
+            
+    return flattened
+
+
 @app.route("/add-record", methods=["POST"])
 def add_record():
     data = request.get_json()
@@ -131,6 +144,8 @@ def add_record():
     data["date_time"] = date_time_str
     insertion = collection.insert_one(data)
     record = collection.find_one({"record_id": record_id}, {'_id': False, 'image': False})
+    record["attributes"]["primary"] = flatten_dictionary(record["attributes"]["primary"])
+    record["attributes"]["secondary"] = flatten_dictionary(record["attributes"]["secondary"])
 
     return jsonify({'message': 'success', "record": record})
 
@@ -148,14 +163,18 @@ def update_record():
 
     return jsonify({'message': 'success', "record": record}), 200
 
-
 @app.route('/get-records', methods=["GET"])
 def get_records():
     db = mongo_client["inventory_db"]
     collection = db["records"]
     records = list(collection.find({}, {'_id': False, 'image': False}))
+    updated_records = []
+    for record in records:
+        record["attributes"]["primary"] = flatten_dictionary(record["attributes"]["primary"])
+        record["attributes"]["secondary"] = flatten_dictionary(record["attributes"]["secondary"])
+        updated_records.append(record)
     # records = {"response": "success"}
-    return jsonify(records), 200, {"Content-Type": "application/json"}
+    return jsonify(updated_records), 200, {"Content-Type": "application/json"}
  
 
 @app.route('/get-specific-record', methods=["POST"])
@@ -164,6 +183,8 @@ def get_specific_record():
     db = mongo_client["inventory_db"]
     collection = db["records"] 
     record = collection.find_one({"record_id": record_id}, {'_id': False, "image": False})
+    record["attributes"]["primary"] = flatten_dictionary(record["attributes"]["primary"])
+    record["attributes"]["secondary"] = flatten_dictionary(record["attributes"]["secondary"])
     return jsonify(record)
 
 @app.route('/add-records-from-file', methods=["POST"])
