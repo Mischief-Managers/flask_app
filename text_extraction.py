@@ -43,10 +43,13 @@ def extract_information(base64_image, prompt):
       }
     ],)
     res = response.choices[0].message.content
-    star_idx = res.find('json') + 4
-    end_idx = -3
-    attributes = json.loads(res[star_idx:end_idx])
-    return attributes
+    try:
+        star_idx = res.find('json') + 4
+        end_idx = -3
+        attributes = json.loads(res[star_idx:end_idx])
+        return attributes
+    except:
+       return {"message": "No information extracted from the image."}
 
 if __name__ == '__main__':
   image_path = "../Junction 2024/Pictures/20220517_114912.jpg"
