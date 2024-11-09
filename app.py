@@ -4,6 +4,7 @@ import requests
 import pandas as pd
 from pymongo import MongoClient
 from flask import Flask, render_template, request
+from text_extraction import extract_information, encode_image
 app = Flask(__name__)
 
 mongo_client = MongoClient('localhost', 27017)
@@ -11,6 +12,14 @@ mongo_client = MongoClient('localhost', 27017)
 @app.route('/add-record', methods=["POST"])
 def add_record():  
     response = requests.json()
+    image_path = response.get("image")
+    base64_image = encode_image(image_path)
+    prompt = ("Analyze the image and make two dictionary of key-value pairs of the information present in the image. "
+              "The first dictionary should have all the main attributes in large/bold font. "
+              "Second dictionary should have the secondary attributes represented in small font. "
+              " The output should be in json format of { 'primary' :{'key1':'value1',. . }, 'secondary' :['key1':'value1',. . ]}.")
+    attributes = extract_information(base64_image, prompt)
+    response["attributes"] = attributes
     record_id = uuid.uuid4()
     response["record_id"] = record_id
     db = mongo_client["inventory_db"]
