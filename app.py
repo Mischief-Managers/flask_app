@@ -13,35 +13,35 @@ def add_record():
     response = requests.json()
     record_id = uuid.uuid4()
     response["record_id"] = record_id
-    mongo_client = mongo_client.flask_db
-    db = mongo_client.records
-    insertion = db.insert_one(response)
+    db = mongo_client["inventory_db"]
+    collection = db["records"]
+    insertion = collection.insert_one(response)
 
     return json.dumps({'message': 'success'}), 200, {'Content-Type': 'application/json'}
 
 @app.route('/get-records', methods=["GET"])
 def get_records():
-    mongo_client = mongo_client.flask_db
-    db = mongo_client.records
-    records = db.find()
+    db = mongo_client["inventory_db"]
+    collection = db["records"]
+    records = collection.find()
     return json.dumps(records), 200, {'Content-Type': 'application/json'}
  
 
 @app.route('/get-specific-record', methods=["POST"])
 def get_specific_record():
     record_id = request.json.get("record_id")  
-    mongo_client = mongo_client.flask_db
-    db = mongo_client.records
-    record = db.find_one({"record_id": record_id})
+    db = mongo_client["inventory_db"]
+    collection = db["records"] 
+    record = collection.find_one({"record_id": record_id})
     return json.dumps(record), 200, {'Content-Type': 'application/json'}
 
 @app.route('/add-records-from-file', methods=["POST"])
 def add_records_from_file():
     file_path = request.json.get("file_path")
-    mongo_client = mongo_client.flask_db
-    db = mongo_client.records
+    db = mongo_client["inventory_db"]
+    collection = db["records"]
     records = pd.read_csv(file_path).to_dict('records')
-    insertion = db.insert_many(records)
+    insertion = collection.insert_many(records)
     return json.dumps({'message': 'success'}), 200, {'Content-Type': 'application/json'}
 
 if __name__ == '__main__':
