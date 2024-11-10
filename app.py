@@ -110,6 +110,35 @@ def flatten_dictionary(data, parent_key='', separator='_'):
             
     return flattened
 
+@app.route("/get-building-coordinates", methods=["POST"])
+def get_building_coordinates():
+    building = request.get_json()["building"]
+    db = mongo_client["inventory_db"]
+    records_collection = db["records"]
+    collection = db["image_coordinates"]
+    data_records = records_collection.find({"building": building}, {"_id": 0, 'image': 0})
+    coordinates = []
+    for record in data_records:
+        record_id = record["record_id"]
+        coordinate_values = collection.find_one({"record_id": record_id}, {"_id": 0, "record_id": 0})
+        coordinates.append({
+            "building": building,
+            "record_id": record_id,
+            "x": coordinate_values["x"],
+            "y": coordinate_values["y"]
+        })
+
+    return jsonify(coordinates)
+
+@app.route("/get-image-coordinates", methods=["POST"])
+def get_image_coordinates():
+    record_id = request.get_json()["record_id"]
+    db = mongo_client["inventory_db"]
+    collection = db["image_coordinates"]
+    record = collection.find_one({"record_id": record_id}, {"_id": 0})
+
+    return jsonify(record)
+
 
 @app.route("/add-record", methods=["POST"])
 def add_record():
@@ -157,6 +186,9 @@ def update_record():
     record_id = data["record_id"]
     previous_record = collection.find_one({"record_id": record_id})
     data["image"] = previous_record["image"]
+    current_datetime = datetime.datetime.now()
+    date_time_str = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
+    data["date_time"] = date_time_str
     collection.delete_one({"record_id": record_id})
     insertion = collection.insert_one(data)
     record = collection.find_one({"record_id": record_id}, {'_id': False, 'image': False})
@@ -170,9 +202,12 @@ def get_records():
     records = list(collection.find({}, {'_id': False, 'image': False}))
     updated_records = []
     for record in records:
-        record["attributes"]["primary"] = flatten_dictionary(record["attributes"]["primary"])
-        record["attributes"]["secondary"] = flatten_dictionary(record["attributes"]["secondary"])
-        updated_records.append(record)
+        if "attributes" not in record:
+            updated_records.append(record)
+        else:
+            record["attributes"]["primary"] = flatten_dictionary(record["attributes"]["primary"])
+            record["attributes"]["secondary"] = flatten_dictionary(record["attributes"]["secondary"])
+            updated_records.append(record)
     # records = {"response": "success"}
     return jsonify(updated_records), 200, {"Content-Type": "application/json"}
  
@@ -187,6 +222,14 @@ def get_specific_record():
     record["attributes"]["secondary"] = flatten_dictionary(record["attributes"]["secondary"])
     return jsonify(record)
 
+@app.route('/get-specific-image', methods=["POST"])
+def get_specific_image():
+    record_id = request.get_json()["record_id"]
+    db = mongo_client["inventory_db"]
+    collection = db["records"]
+    record = collection.find_one({"record_id": record_id}, {"_id": 0, "record_id": 1, "image": 1})
+    return jsonify(record)
+
 @app.route('/add-records-from-file', methods=["POST"])
 def add_records_from_file():
     file_path = request.json.get("file_path")
@@ -198,3 +241,4 @@ def add_records_from_file():
 
 if __name__ == '__main__':
    app.run(debug=False, host='0.0.0.0', port=4500)
+   
